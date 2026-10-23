@@ -6,7 +6,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Serve static UI files from the 'public' folder
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(__dirname));
 
 // Proxy endpoint that fetches the web page
 app.get('/proxy', async (req, res) => {
