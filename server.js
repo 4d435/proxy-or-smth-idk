@@ -5,23 +5,32 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Serve static UI files from the 'public' folder
-app.use(express.static(__dirname));
+// Serve static frontend files from the 'public' directory[cite: 10]
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Proxy endpoint that fetches the web page
+// Explicit route to serve index.html when visiting the homepage[cite: 10]
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Proxy endpoint to handle web requests
 app.get('/proxy', async (req, res) => {
     const targetUrl = req.query.url;
-    if (!targetUrl) return res.status(400).send('URL parameter is required.');
+    if (!targetUrl) {
+        return res.status(400).send('URL parameter is required.');
+    }
 
     try {
         const response = await fetch(targetUrl, {
             headers: { 
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' 
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' 
             }
         });
         
         const contentType = response.headers.get('content-type');
-        if (contentType) res.setHeader('Content-Type', contentType);
+        if (contentType) {
+            res.setHeader('Content-Type', contentType);
+        }
 
         const body = await response.text();
         res.send(body);
